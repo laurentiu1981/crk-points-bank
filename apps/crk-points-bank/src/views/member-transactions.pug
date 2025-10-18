@@ -1,0 +1,65 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Points Bank - Transactions
+    link(rel='stylesheet', href='/css/member.css')
+  body
+    .header
+      .header-content
+        h1 💎 Points Bank
+        nav
+          a(href='/member/dashboard', class=activePage === 'dashboard' ? 'active' : '') Dashboard
+          a(href='/member/transactions', class=activePage === 'transactions' ? 'active' : '') Transactions
+          a(href='/member/logout') Logout
+
+    .container
+      .points-banner
+        h2 Your Points Balance
+        .points-value= member.points.toLocaleString()
+        p points available
+
+      .card
+        h2.card-title 📜 Transaction History
+        p.card-description Your recent points activity
+
+        if transactions && transactions.length > 0
+          .transactions-list
+            each tx in transactions
+              .transaction-card(class=tx.type === 'credit' ? 'credit' : 'redemption')
+                .transaction-icon
+                  if tx.type === 'credit'
+                    span.icon ⬆️
+                  else
+                    span.icon ⬇️
+
+                .transaction-details
+                  .transaction-header
+                    h3.transaction-title= tx.description
+                    .transaction-amount(class=tx.type === 'credit' ? 'positive' : 'negative')
+                      if tx.type === 'credit'
+                        | +#{tx.amount.toLocaleString()}
+                      else
+                        | #{tx.amount.toLocaleString()}
+                      |  points
+
+                  .transaction-meta
+                    p
+                      strong Partner:
+                      |  #{tx.partnerName}
+                    if tx.type === 'credit' && tx.reason
+                      p
+                        strong Reason:
+                        |  #{tx.reason}
+                    if tx.type === 'redemption' && tx.status
+                      p
+                        strong Status:
+                        |  #{tx.status}
+                    p
+                      strong Date:
+                      |  #{new Date(tx.createdAt).toLocaleString()}
+
+        else
+          p.empty-state No transactions yet. When you earn or redeem points, they will appear here.
+

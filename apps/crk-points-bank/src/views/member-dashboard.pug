@@ -1,0 +1,76 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Points Bank - Dashboard
+    link(rel='stylesheet', href='/css/member.css')
+  body
+    .header
+      .header-content
+        h1 💎 Points Bank
+        nav
+          a(href='/member/dashboard', class=activePage === 'dashboard' ? 'active' : '') Dashboard
+          a(href='/member/transactions', class=activePage === 'transactions' ? 'active' : '') Transactions
+          a(href='/member/logout') Logout
+
+    .container
+      .points-banner
+        h2 Your Points Balance
+        .points-value= member.points.toLocaleString()
+        p points available
+
+      .member-info
+        .info-grid
+          .info-item
+            label Name
+            .value #{member.firstName} #{member.lastName}
+          .info-item
+            label Email
+            .value= member.email
+          .info-item
+            label Member ID
+            .value= member.id
+
+      if successMessage
+        .alert.alert-success= successMessage
+
+      if errorMessage
+        .alert.alert-error= errorMessage
+
+      .card
+        h2.card-title 🔐 Active OAuth Sessions
+        p.card-description These are the apps that currently have access to your Points Bank account.
+
+        if sessions && sessions.length > 0
+          .sessions-list
+            each session in sessions
+              .session-card
+                .session-header
+                  if session.clientLogo
+                    img.session-logo(src=session.clientLogo, alt=session.clientName)
+                  .session-info
+                    h3.session-name= session.clientName
+                    .session-scopes
+                      each scope in session.scope
+                        span.scope-badge= scope
+
+                .session-details
+                  .session-meta
+                    p
+                      strong Connected:
+                      |  #{new Date(session.createdAt).toLocaleString()}
+                    p
+                      strong Expires:
+                      |  #{new Date(session.expiresAt).toLocaleString()}
+                    if session.lastUsed
+                      p
+                        strong Last Used:
+                        |  #{new Date(session.lastUsed).toLocaleString()}
+
+                  form.revoke-form(method='POST', action=`/member/sessions/${session.id}/revoke`, onsubmit='return confirm("Revoke access for this app?")')
+                    button.btn.btn-danger(type='submit') Revoke Access
+
+        else
+          p.empty-state No active OAuth sessions. When you connect partner apps, they will appear here.
+

@@ -1,0 +1,169 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Simulation Dashboard - Partner Shopping App
+    link(rel='stylesheet', href='/css/main.css')
+  body
+    header.header
+      .header-content
+        h1 🛍️ Partner Shopping App
+        nav
+          a(href='/') Home
+          a(href='/simulation-dashboard') Simulation Dashboard
+
+    .container
+      .card
+        h2.card-title 🎮 Backend Simulation Dashboard
+        p.info-text This dashboard simulates backend partner operations. No login required - this represents your partner's backend systems.
+
+      if successMessage
+        .alert.alert-success= successMessage
+
+      if errorMessage
+        .alert.alert-error= errorMessage
+
+      .card.reward-section
+        h2.card-title ✨ Reward Points (Backend Operation)
+        p.info-text Simulate rewarding points to members for various actions (purchases, referrals, signups, etc.)
+        p.warning ⚠️ This is a B2B backend operation - uses client credentials, not member tokens
+
+        form(method='POST', action='/simulation/credit', onsubmit='return validateReward()')
+          .form-group
+            label(for='selectMember') Select Member
+            select#selectMember(name='member_id', required)
+              option(value='') Choose a member...
+              each member in members
+                option(value=member.id) #{member.email} - #{member.firstName} #{member.lastName} (#{member.points} points)
+
+          .form-group
+            label(for='rewardAmount') Amount (points)
+            input#rewardAmount(type='number', name='amount', min='1', required, placeholder='Enter amount')
+
+          .form-group
+            label(for='rewardDescription') Description
+            input#rewardDescription(type='text', name='description', required, placeholder='What is this reward for?')
+
+          .form-group
+            label(for='rewardReason') Reason (Category)
+            select#rewardReason(name='reason', required)
+              option(value='') Select reason...
+              option(value='purchase_reward') Purchase Reward
+              option(value='signup_bonus') Signup Bonus
+              option(value='referral') Referral Bonus
+              option(value='promotion') Promotion
+              option(value='loyalty') Loyalty Reward
+              option(value='other') Other
+
+          button.btn.btn-secondary(type='submit') ✨ Award Points to Member
+
+      .card.redemption-section
+        h2.card-title 🎫 Create Redemption Request (OTP-based)
+        p.info-text Create a redemption request that requires member approval via OTP
+        p.warning ⚠️ This is a B2B backend operation - member must approve with OTP
+
+        form(method='POST', action='/simulation/redemption-request', onsubmit='return validateRedemptionRequest()')
+          .form-group
+            label(for='selectMemberRedeem') Select Member
+            select#selectMemberRedeem(name='member_id', required)
+              option(value='') Choose a member...
+              each member in members
+                option(value=member.id) #{member.email} - #{member.firstName} #{member.lastName} (#{member.points} points)
+
+          .form-group
+            label(for='redemptionAmount') Amount (points)
+            input#redemptionAmount(type='number', name='amount', min='1', required, placeholder='Enter amount')
+
+          .form-group
+            label(for='redemptionDescription') Description
+            input#redemptionDescription(type='text', name='description', required, placeholder='What is being redeemed?')
+
+          button.btn.btn-primary(type='submit') 🎫 Create Redemption Request
+
+      if pendingRequests && pendingRequests.length > 0
+        .card
+          h2.card-title 📋 Pending Redemption Requests
+          p.info-text These requests are waiting for member approval with OTP
+
+          each request in pendingRequests
+            .request-item
+              .request-header
+                strong #{request.memberEmail}
+                span.request-amount #{request.amount} points
+              .request-details
+                p.request-description #{request.description}
+                p.request-meta Created: #{new Date(request.createdAt).toLocaleString()} | Expires: #{new Date(request.expiresAt).toLocaleString()}
+                p.request-otp
+                  strong OTP Code:
+                  span.otp-code #{request.otp}
+                  small  (Demo only - normally sent via SMS/Email)
+              .request-actions
+                form.inline-form(method='POST', action='/simulation/redemption/approve', onsubmit='return confirm("Approve this redemption request?")')
+                  input(type='hidden', name='request_id', value=request.requestId)
+                  input(type='hidden', name='member_id', value=request.memberId)
+                  input(type='text', name='otp', placeholder='Enter OTP', required, pattern='[0-9]{6}', maxlength='6')
+                  button.btn.btn-success(type='submit') ✅ Approve
+                form.inline-form(method='POST', action='/simulation/redemption/reject', onsubmit='return confirm("Reject this redemption request?")')
+                  input(type='hidden', name='request_id', value=request.requestId)
+                  input(type='hidden', name='member_id', value=request.memberId)
+                  button.btn.btn-danger(type='submit') ❌ Reject
+
+    script.
+      function validateReward() {
+        const memberId = document.getElementById('selectMember').value;
+        const amount = parseInt(document.getElementById('rewardAmount').value);
+        const description = document.getElementById('rewardDescription').value.trim();
+        const reason = document.getElementById('rewardReason').value;
+
+        if (!memberId) {
+          alert('Please select a member');
+          return false;
+        }
+
+        if (amount <= 0) {
+          alert('Amount must be greater than 0');
+          return false;
+        }
+
+        if (!description) {
+          alert('Please enter a description');
+          return false;
+        }
+
+        if (!reason) {
+          alert('Please select a reason');
+          return false;
+        }
+
+        const memberSelect = document.getElementById('selectMember');
+        const memberText = memberSelect.options[memberSelect.selectedIndex].text;
+
+        return confirm(`Award ${amount} points to ${memberText} for "${description}"?`);
+      }
+
+      function validateRedemptionRequest() {
+        const memberId = document.getElementById('selectMemberRedeem').value;
+        const amount = parseInt(document.getElementById('redemptionAmount').value);
+        const description = document.getElementById('redemptionDescription').value.trim();
+
+        if (!memberId) {
+          alert('Please select a member');
+          return false;
+        }
+
+        if (amount <= 0) {
+          alert('Amount must be greater than 0');
+          return false;
+        }
+
+        if (!description) {
+          alert('Please enter a description');
+          return false;
+        }
+
+        const memberSelect = document.getElementById('selectMemberRedeem');
+        const memberText = memberSelect.options[memberSelect.selectedIndex].text;
+
+        return confirm(`Create redemption request for ${amount} points from ${memberText}?`);
+      }

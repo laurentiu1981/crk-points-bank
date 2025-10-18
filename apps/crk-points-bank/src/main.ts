@@ -13,7 +13,15 @@ import session from "express-session";
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  app.setGlobalPrefix(globalPrefix, {
+    exclude: [
+      'member/login',
+      'member/dashboard',
+      'member/transactions',
+      'member/sessions/:sessionId/revoke',
+      'member/logout',
+    ],
+  });
 
   // Configure Pug template engine
   app.setBaseViewsDir(join(__dirname, 'views'));

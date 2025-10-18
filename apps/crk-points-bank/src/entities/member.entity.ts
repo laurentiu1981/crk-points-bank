@@ -26,7 +26,7 @@ export class Member {
   @Column({ name: 'last_name' })
   lastName: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
   points: number;
 
   @Column({ default: true })

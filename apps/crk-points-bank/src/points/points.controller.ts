@@ -38,6 +38,12 @@ export class PointsController {
     this.logger.log(`Amount: ${amount}`);
     this.logger.log(`Description: ${description || 'none'}`);
 
+    // Ensure amount is a number (HTTP body params come as strings)
+    const parsedAmount = Number(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      throw new BadRequestException('Amount must be a valid positive number');
+    }
+
     // Extract access token from Authorization header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -64,7 +70,7 @@ export class PointsController {
     const result = await this.pointsService.redeemWithAccessToken(
       accessToken.member,
       accessToken.client,
-      amount,
+      parsedAmount,
       description,
     );
 
@@ -101,11 +107,17 @@ export class PointsController {
       throw new BadRequestException('Missing required parameters: client_id, client_secret, member_id, amount');
     }
 
+    // Ensure amount is a number (HTTP body params come as strings)
+    const parsedAmount = Number(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      throw new BadRequestException('Amount must be a valid positive number');
+    }
+
     const result = await this.pointsService.createRedemptionRequest(
       clientId,
       clientSecret,
       memberId,
-      amount,
+      parsedAmount,
       description,
     );
 
@@ -234,11 +246,17 @@ export class PointsController {
       throw new BadRequestException('Missing required parameters: client_id, client_secret, member_id, amount');
     }
 
+    // Ensure amount is a number (HTTP body params come as strings)
+    const parsedAmount = Number(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      throw new BadRequestException('Amount must be a valid positive number');
+    }
+
     const result = await this.pointsService.creditPointsWithClientCredentials(
       clientId,
       clientSecret,
       memberId,
-      amount,
+      parsedAmount,
       description,
       reason,
     );

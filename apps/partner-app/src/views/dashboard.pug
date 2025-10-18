@@ -8,9 +8,10 @@ html(lang='en')
   body
     header.header
       .header-content
-        h1 🛍️ Partner Shopping App
+        h1 🛍️ Member Shop
         nav
-          a(href='/dashboard') Dashboard
+          a(href='/dashboard') Shop
+          a(href='/simulation-dashboard', target='_blank') 🎮 Backend Sim
           a(href='/logout') Logout
 
     .container
@@ -97,33 +98,6 @@ html(lang='en')
 
           button.btn.btn-primary(type='submit') 🎁 Redeem Points
 
-      .card.reward-section
-        h2.card-title Reward Points (Demo)
-        p.info-text Simulate rewarding points for member actions (e.g., purchases, referrals)
-        p.warning ⚠️ This is a B2B action - normally triggered by backend events, not manual user actions
-
-        form(method='POST', action='/credit', onsubmit='return validateReward()')
-          .form-group
-            label(for='rewardAmount') Amount (points)
-            input#rewardAmount(type='number', name='amount', min='1', required, placeholder='Enter amount')
-
-          .form-group
-            label(for='rewardDescription') Description
-            input#rewardDescription(type='text', name='description', required, placeholder='What is this reward for?')
-
-          .form-group
-            label(for='rewardReason') Reason (Category)
-            select#rewardReason(name='reason', required)
-              option(value='') Select reason...
-              option(value='purchase_reward') Purchase Reward
-              option(value='signup_bonus') Signup Bonus
-              option(value='referral') Referral Bonus
-              option(value='promotion') Promotion
-              option(value='loyalty') Loyalty Reward
-              option(value='other') Other
-
-          button.btn.btn-secondary(type='submit') ✨ Award Points
-
     script.
       function validateCustomRedemption() {
         const amount = parseInt(document.getElementById('customAmount').value);
@@ -140,27 +114,4 @@ html(lang='en')
         }
 
         return confirm(`Redeem ${amount} points for "${description}"?`);
-      }
-
-      function validateReward() {
-        const amount = parseInt(document.getElementById('rewardAmount').value);
-        const description = document.getElementById('rewardDescription').value.trim();
-        const reason = document.getElementById('rewardReason').value;
-
-        if (amount <= 0) {
-          alert('Amount must be greater than 0');
-          return false;
-        }
-
-        if (!description) {
-          alert('Please enter a description');
-          return false;
-        }
-
-        if (!reason) {
-          alert('Please select a reason');
-          return false;
-        }
-
-        return confirm(`Award ${amount} points for "${description}"?`);
       }

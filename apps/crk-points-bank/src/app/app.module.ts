@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { OAuthModule } from '../oauth/oauth.module';
 import { AdminModule } from '../admin/admin.module';
 import { PointsModule } from '../points/points.module';
+import { MemberModule } from '../member/member.module';
 import { Member } from '../entities/member.entity';
 import { OAuthClient } from '../entities/oauth-client.entity';
 import { OAuthAuthorizationCode } from '../entities/oauth-authorization-code.entity';
@@ -48,6 +49,7 @@ import { CreditTransaction } from '../entities/credit-transaction.entity';
     OAuthModule,
     AdminModule,
     PointsModule,
+    MemberModule,
   ],
   controllers: [AppController],
   providers: [AppService],

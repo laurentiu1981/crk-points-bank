@@ -331,3 +331,168 @@ body {
         border: 1px solid #ffeeba;
     }
 }
+
+.redemption-section {
+    border: 2px solid lighten($primary-color, 35%);
+    background: lighten($primary-color, 48%);
+
+    .info-text {
+        color: $text-secondary;
+        font-size: $font-size-sm;
+        margin-bottom: $spacing-sm;
+    }
+
+    .warning {
+        background: #d1ecf1;
+        color: #0c5460;
+        padding: $spacing-sm $spacing-md;
+        border-radius: $radius-sm;
+        font-size: $font-size-sm;
+        margin-bottom: $spacing-lg;
+        border: 1px solid #bee5eb;
+    }
+}
+
+.request-item {
+    background: $background-light;
+    border: 2px solid $border-color;
+    border-radius: $radius-md;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-lg;
+    transition: all 0.2s;
+
+    &:hover {
+        border-color: $primary-color;
+        box-shadow: $shadow-md;
+    }
+
+    .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $spacing-md;
+        padding-bottom: $spacing-md;
+        border-bottom: 1px solid $border-color;
+
+        strong {
+            font-size: $font-size-lg;
+            color: $text-primary;
+        }
+
+        .request-amount {
+            font-size: $font-size-lg;
+            font-weight: 700;
+            color: $primary-color;
+        }
+    }
+
+    .request-details {
+        margin-bottom: $spacing-md;
+
+        .request-description {
+            font-size: $font-size-base;
+            color: $text-primary;
+            margin-bottom: $spacing-sm;
+            font-weight: 500;
+        }
+
+        .request-meta {
+            font-size: $font-size-sm;
+            color: $text-secondary;
+            margin-bottom: $spacing-sm;
+        }
+
+        .request-otp {
+            background: #fff3cd;
+            padding: $spacing-sm $spacing-md;
+            border-radius: $radius-sm;
+            font-size: $font-size-sm;
+            margin-top: $spacing-md;
+
+            strong {
+                color: #856404;
+                margin-right: $spacing-sm;
+            }
+
+            .otp-code {
+                font-family: monospace;
+                font-size: $font-size-lg;
+                font-weight: 700;
+                color: #856404;
+                letter-spacing: 2px;
+                margin: 0 $spacing-sm;
+            }
+
+            small {
+                color: #856404;
+                opacity: 0.8;
+            }
+        }
+    }
+
+    .request-actions {
+        display: flex;
+        gap: $spacing-md;
+        align-items: flex-end;
+
+        .inline-form {
+            display: flex;
+            gap: $spacing-sm;
+            align-items: flex-end;
+
+            input[type="text"] {
+                width: 120px;
+                padding: $spacing-sm $spacing-md;
+                border: 2px solid $border-color;
+                border-radius: $radius-md;
+                font-size: $font-size-base;
+                font-family: monospace;
+
+                &:focus {
+                    outline: none;
+                    border-color: $primary-color;
+                }
+            }
+
+            button {
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+.btn-success {
+    background: #28a745;
+    color: $white;
+    padding: $spacing-sm $spacing-lg;
+    border-radius: $radius-md;
+    font-size: $font-size-base;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: darken(#28a745, 10%);
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+    }
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: $white;
+    padding: $spacing-sm $spacing-lg;
+    border-radius: $radius-md;
+    font-size: $font-size-base;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+        background: darken(#dc3545, 10%);
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+    }
+}

@@ -75,4 +75,8 @@ export class AuthService {
   async findById(id: string): Promise<Member> {
     return this.memberRepository.findOne({ where: { id } });
   }
+
+  async findMemberById(id: string): Promise<Member | null> {
+    return this.memberRepository.findOne({ where: { id, active: true } });
+  }
 }
