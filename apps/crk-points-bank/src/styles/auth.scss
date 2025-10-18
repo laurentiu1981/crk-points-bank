@@ -1,0 +1,135 @@
+@import 'variables';
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: $font-family;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-xl;
+}
+
+.container {
+    background: white;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-main;
+    max-width: 400px;
+    width: 100%;
+    padding: $spacing-huge;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: $spacing-xxxl;
+
+    h1 {
+        color: $primary-color;
+        font-size: $font-size-xl;
+        font-weight: 700;
+    }
+
+    p {
+        color: $text-secondary;
+        font-size: $font-size-base;
+        margin-top: $spacing-xs;
+    }
+}
+
+.partner-info {
+    background: $background-light;
+    border-left: 4px solid $primary-color;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-xxl;
+    border-radius: $radius-sm;
+
+    p {
+        color: darken($text-secondary, 5%);
+        font-size: $font-size-base;
+        line-height: 1.5;
+    }
+
+    strong {
+        color: $text-primary;
+    }
+}
+
+.form-group {
+    margin-bottom: $spacing-xl;
+}
+
+label {
+    display: block;
+    color: $text-primary;
+    font-weight: 500;
+    margin-bottom: $spacing-sm;
+    font-size: $font-size-base;
+}
+
+input {
+    width: 100%;
+    padding: $spacing-md $spacing-lg;
+    border: 2px solid $border-color;
+    border-radius: $radius-md;
+    font-size: $font-size-base;
+    transition: border-color $transition-default;
+
+    &:focus {
+        outline: none;
+        border-color: $primary-color;
+    }
+}
+
+.error {
+    background: $error-bg;
+    border-left: 4px solid $error-color;
+    color: $error-text;
+    padding: $spacing-md $spacing-lg;
+    margin-bottom: $spacing-xl;
+    border-radius: $radius-sm;
+    font-size: $font-size-base;
+}
+
+button {
+    width: 100%;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: $radius-md;
+    font-size: $font-size-md;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform $transition-fast;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.link-text {
+    text-align: center;
+    margin-top: $spacing-xl;
+    font-size: $font-size-base;
+    color: $text-secondary;
+
+    a {
+        color: $primary-color;
+        text-decoration: none;
+        font-weight: 600;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

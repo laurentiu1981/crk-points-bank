@@ -1,0 +1,38 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Points Bank - Register
+    link(rel='stylesheet', href='/css/auth.css')
+  body
+    .container
+      .logo
+        h1 Points Bank
+        p Create Your Account
+
+      if error
+        .error= error
+
+      form(method='POST', action='/api/oauth/register')
+        .form-group
+          label(for='firstName') First Name
+          input#firstName(type='text', name='firstName', required, autofocus)
+
+        .form-group
+          label(for='lastName') Last Name
+          input#lastName(type='text', name='lastName', required)
+
+        .form-group
+          label(for='email') Email Address
+          input#email(type='email', name='email', required)
+
+        .form-group
+          label(for='password') Password
+          input#password(type='password', name='password', required, minlength='8')
+
+        button(type='submit') Create Account
+
+      .link-text
+        | Already have an account?
+        a(href='/api/oauth/login-form') Sign in

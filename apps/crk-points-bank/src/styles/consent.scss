@@ -1,0 +1,174 @@
+@import 'variables';
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: $font-family;
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-xl;
+}
+
+.container {
+    background: white;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-main;
+    max-width: 450px;
+    width: 100%;
+    padding: $spacing-huge;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: $spacing-xxxl;
+
+    h1 {
+        color: $primary-color;
+        font-size: $font-size-xl;
+        font-weight: 700;
+    }
+}
+
+.client-info {
+    text-align: center;
+    margin-bottom: $spacing-xxxl;
+}
+
+.client-logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto $spacing-lg;
+    background: $background-light;
+    border-radius: $radius-circle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+}
+
+.client-name {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: $spacing-xs;
+}
+
+.request-message {
+    color: $text-secondary;
+    font-size: $font-size-base;
+}
+
+.member-info {
+    background: $background-light;
+    padding: $spacing-lg;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-xxl;
+
+    p {
+        color: $text-secondary;
+        font-size: $font-size-sm;
+        margin-bottom: $spacing-xs;
+    }
+
+    .member-email {
+        color: $text-primary;
+        font-weight: 600;
+    }
+}
+
+.permissions {
+    margin-bottom: $spacing-xxxl;
+
+    h3 {
+        color: $text-primary;
+        font-size: $font-size-md;
+        margin-bottom: $spacing-lg;
+        font-weight: 600;
+    }
+}
+
+.permission-item {
+    display: flex;
+    align-items: center;
+    padding: $spacing-md $spacing-lg;
+    background: $background-light;
+    border-radius: $radius-md;
+    margin-bottom: 10px;
+}
+
+.permission-icon {
+    width: 40px;
+    height: 40px;
+    background: $primary-color;
+    color: white;
+    border-radius: $radius-circle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: $spacing-lg;
+    font-size: 18px;
+}
+
+.permission-text {
+    flex: 1;
+
+    strong {
+        display: block;
+        color: $text-primary;
+        font-size: $font-size-base;
+        margin-bottom: 3px;
+    }
+
+    span {
+        color: $text-secondary;
+        font-size: $font-size-xs;
+    }
+}
+
+.actions {
+    display: flex;
+    gap: $spacing-md;
+}
+
+button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: $radius-md;
+    font-size: $font-size-md;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform $transition-fast;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.btn-approve {
+    background: linear-gradient(135deg, $primary-color 0%, $primary-dark 100%);
+    color: white;
+}
+
+.btn-deny {
+    background: $border-color;
+    color: $text-secondary;
+}
+
+.security-note {
+    text-align: center;
+    margin-top: $spacing-xl;
+    font-size: $font-size-xs;
+    color: $text-tertiary;
+}

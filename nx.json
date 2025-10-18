@@ -37,7 +37,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/crk-points-bank-e2e/**/*"]
+      "exclude": ["apps/crk-points-bank-e2e/**/*", "apps/partner-app-e2e/**/*"]
     }
   ]
 }

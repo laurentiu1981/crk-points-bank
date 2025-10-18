@@ -1,0 +1,42 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Dashboard - Partner Shopping App
+    link(rel='stylesheet', href='/css/main.css')
+  body
+    header.header
+      .header-content
+        h1 🛍️ Partner Shopping App
+        nav
+          a(href='/dashboard') Dashboard
+          a(href='/logout') Logout
+
+    .container
+      .points-display
+        h3 Your Points Balance
+        .points-value= member.points
+        p points available
+
+      .card
+        h2.card-title Welcome, #{member.firstName}!
+
+        .info-grid
+          .info-item
+            label Name
+            value #{member.firstName} #{member.lastName}
+
+          .info-item
+            label Email
+            value= member.email
+
+          .info-item
+            label Member ID
+            value= member.id
+
+      .card
+        h2.card-title Quick Actions
+        .actions
+          button.btn.btn-secondary(disabled) 🛒 Buy Product (Coming Soon)
+          button.btn.btn-secondary(disabled) 🎁 Redeem Points (Coming Soon)

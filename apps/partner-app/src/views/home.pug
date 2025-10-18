@@ -1,0 +1,24 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Partner Shopping App
+    link(rel='stylesheet', href='/css/main.css')
+  body
+    header.header
+      .header-content
+        h1 🛍️ Partner Shopping App
+        nav
+          a(href='/') Home
+
+    if redirect
+      script window.location.href = '#{redirect}';
+
+    .hero
+      .container
+        h2 Welcome to Partner Shopping App
+        p Earn and spend points from your Points Bank account. Login to get started!
+
+        a.btn.btn-primary.btn-large(href='/login')
+          | 🔐 Login with Points Bank

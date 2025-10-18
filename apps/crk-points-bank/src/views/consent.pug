@@ -1,0 +1,44 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Points Bank - Authorize Access
+    link(rel='stylesheet', href='/css/consent.css')
+  body
+    .container
+      .logo
+        h1 Points Bank
+
+      .client-info
+        .client-logo 🔐
+        .client-name= clientName
+        p.request-message wants to access your Points Bank account
+
+      .member-info
+        p Logged in as:
+        p.member-email= memberEmail
+
+      .permissions
+        h3 This will allow #{clientName} to:
+
+        if hasProfileScope
+          .permission-item
+            .permission-icon 👤
+            .permission-text
+              strong Access your profile
+              span View your name and email address
+
+        if hasPointsScope
+          .permission-item
+            .permission-icon ⭐
+            .permission-text
+              strong View your points balance
+              span See how many points you have
+
+      form(method='POST', action='/api/oauth/consent')
+        .actions
+          button.btn-deny(type='button', onclick="window.location.href='/api/oauth/deny'") Deny
+          button.btn-approve(type='submit') Authorize
+
+      p.security-note You can revoke this access at any time from your account settings

@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: crk-points-bank-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: points_bank
+      POSTGRES_USER: points_admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-dev_password_change_in_production}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U points_admin -d points_bank']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - points-bank-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: crk-points-bank-api
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USERNAME=points_admin
+      - DB_PASSWORD=${DB_PASSWORD:-dev_password_change_in_production}
+      - DB_DATABASE=points_bank
+      - JWT_SECRET=${JWT_SECRET:-dev-jwt-secret-please-change-in-production}
+      - JWT_EXPIRATION=1d
+      - OAUTH_ACCESS_TOKEN_LIFETIME=3600
+      - OAUTH_REFRESH_TOKEN_LIFETIME=1209600
+      - OAUTH_AUTHORIZATION_CODE_LIFETIME=300
+      - NODE_ENV=development
+      - PORT=3000
+      - FRONTEND_URL=http://localhost:4200
+      - SESSION_SECRET=${SESSION_SECRET:-dev-session-secret-please-change-in-production}
+    volumes:
+      # Mount source code for hot reload
+      - ./apps:/app/apps
+      - ./libs:/app/libs
+      - ./nx.json:/app/nx.json
+      - ./tsconfig.base.json:/app/tsconfig.base.json
+      - ./package.json:/app/package.json
+      - ./yarn.lock:/app/yarn.lock
+      # Use named volume for node_modules to avoid conflicts
+      - node_modules:/app/node_modules
+      # Mount .nx cache for faster builds
+      - ./.nx:/app/.nx
+    command: sh -c "yarn styles:watch:api & npx nx serve crk-points-bank --host 0.0.0.0"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - points-bank-network
+
+  partner-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: crk-partner-app
+    restart: unless-stopped
+    ports:
+      - '4200:4200'
+    environment:
+      - NODE_ENV=development
+      - PORT=4200
+      - SESSION_SECRET=${SESSION_SECRET:-partner-session-secret}
+      - POINTS_BANK_URL=http://host.docker.internal:3000
+      - OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
+      - OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
+      - OAUTH_REDIRECT_URI=http://localhost:4200/callback
+    volumes:
+      # Mount source code for hot reload
+      - ./apps:/app/apps
+      - ./libs:/app/libs
+      - ./nx.json:/app/nx.json
+      - ./tsconfig.base.json:/app/tsconfig.base.json
+      - ./package.json:/app/package.json
+      - ./yarn.lock:/app/yarn.lock
+      # Use named volume for node_modules to avoid conflicts
+      - node_modules:/app/node_modules
+      # Mount .nx cache for faster builds
+      - ./.nx:/app/.nx
+    command: sh -c "yarn styles:watch:partner & npx nx serve partner-app --host 0.0.0.0"
+    depends_on:
+      - api
+    networks:
+      - points-bank-network
+
+  adminer:
+    image: adminer:latest
+    container_name: crk-points-bank-adminer
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      - postgres
+    networks:
+      - points-bank-network
+
+volumes:
+  postgres_data:
+    driver: local
+  node_modules:
+    driver: local
+
+networks:
+  points-bank-network:
+    driver: bridge

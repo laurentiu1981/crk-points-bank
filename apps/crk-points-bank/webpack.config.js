@@ -14,11 +14,20 @@ module.exports = {
       compiler: 'tsc',
       main: './src/main.ts',
       tsConfig: './tsconfig.app.json',
-      assets: ['./src/assets'],
+      assets: [
+        './src/assets',
+        './src/views',
+        './src/public',
+      ],
       optimization: false,
       outputHashing: 'none',
       generatePackageJson: true,
       sourceMaps: true,
     }),
   ],
+  // Enable polling for Docker environments
+  watchOptions: {
+    poll: 1000, // Check for changes every second
+    ignored: /node_modules/,
+  },
 };
