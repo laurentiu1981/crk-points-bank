@@ -56,25 +56,26 @@ export class OAuthController {
     const client = await this.oauthService.validateClient(clientId);
     this.logger.log(`Client validated: ${client.clientName}`);
 
-    // Check if member is logged in via session
-    if (!req.session.memberId) {
-      // Save OAuth request parameters in session
-      req.session.oauthRequest = {
-        clientId,
-        redirectUri,
-        responseType,
-        scope: scope || 'profile points',
-        state,
-      };
+    // Save OAuth request parameters in session (needed for both login and SSO flows)
+    req.session.oauthRequest = {
+      clientId,
+      redirectUri,
+      responseType,
+      scope: scope || 'profile points',
+      state,
+    };
 
+    // Check if member is logged in via session (SSO)
+    if (!req.session.memberId) {
       this.logger.log('Member not logged in, redirecting to login page');
       this.logger.log('=== END OAUTH AUTHORIZE ===\n');
       // Redirect to login page with client info
       return res.redirect(`/api/oauth/login-form?client_name=${encodeURIComponent(client.clientName)}`);
     }
 
-    // Member is logged in, redirect to consent page
-    this.logger.log('Member already logged in, redirecting to consent page');
+    // Member is already logged in (SSO) - skip to consent page
+    this.logger.log('✨ SSO DETECTED - Member already logged in, skipping login step');
+    this.logger.log(`Member: ${req.session.memberEmail} (${req.session.memberId})`);
     this.logger.log('=== END OAUTH AUTHORIZE ===\n');
     return res.redirect('/api/oauth/consent-form');
   }
