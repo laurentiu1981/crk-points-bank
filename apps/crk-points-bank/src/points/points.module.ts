@@ -5,12 +5,13 @@ import { PointsService } from './points.service';
 import { Member } from '../entities/member.entity';
 import { OAuthClient } from '../entities/oauth-client.entity';
 import { RedemptionRequest } from '../entities/redemption-request.entity';
+import { CreditTransaction } from '../entities/credit-transaction.entity';
 import { OAuthModule } from '../oauth/oauth.module';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Member, OAuthClient, RedemptionRequest]),
+    TypeOrmModule.forFeature([Member, OAuthClient, RedemptionRequest, CreditTransaction]),
     OAuthModule,
     AuthModule,
   ],

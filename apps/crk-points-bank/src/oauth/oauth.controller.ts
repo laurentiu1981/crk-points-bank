@@ -83,12 +83,11 @@ export class OAuthController {
    * Show login form
    */
   @Get('login-form')
-  @Render('login')
-  async showLoginForm(@Query('client_name') clientName: string, @Query('error') error: string) {
-    return {
+  async showLoginForm(@Query('client_name') clientName: string, @Query('error') error: string, @Response() res) {
+    return res.render('login', {
       clientName: clientName || null,
       error: error || null,
-    };
+    });
   }
 
   /**
@@ -134,11 +133,10 @@ export class OAuthController {
    * Show registration form
    */
   @Get('register-form')
-  @Render('register')
-  async showRegisterForm(@Query('error') error: string) {
-    return {
+  async showRegisterForm(@Query('error') error: string, @Response() res) {
+    return res.render('register', {
       error: error || null,
-    };
+    });
   }
 
   /**
@@ -176,7 +174,6 @@ export class OAuthController {
    * Show consent page
    */
   @Get('consent-form')
-  @Render('consent')
   async showConsentForm(@Request() req, @Response() res) {
     if (!req.session.memberId || !req.session.oauthRequest) {
       return res.redirect('/api/oauth/login-form');
@@ -185,12 +182,12 @@ export class OAuthController {
     const client = await this.oauthService.validateClient(req.session.oauthRequest.clientId);
     const scopes = req.session.oauthRequest.scope.split(' ');
 
-    return {
+    return res.render('consent', {
       clientName: client.clientName,
       memberEmail: req.session.memberEmail,
       hasProfileScope: scopes.includes('profile'),
       hasPointsScope: scopes.includes('points'),
-    };
+    });
   }
 
   /**

@@ -164,4 +164,140 @@ body {
   flex-wrap: wrap;
 }
 
+.alert {
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+.alert-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.product-card {
+  background: #f3f4f6;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.product-card:hover {
+  border-color: #10b981;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+.product-card .product-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+.product-card h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: #111827;
+}
+.product-card .product-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #10b981;
+  margin-bottom: 16px;
+}
+.product-card form {
+  margin: 0;
+}
+.product-card button {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+.form-group label {
+  display: block;
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-group input[type=number],
+.form-group input[type=text],
+.form-group input[type=email],
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: border-color 0.2s;
+}
+.form-group input[type=number]:focus,
+.form-group input[type=text]:focus,
+.form-group input[type=email]:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #10b981;
+}
+.form-group input[type=number]::placeholder,
+.form-group input[type=text]::placeholder,
+.form-group input[type=email]::placeholder,
+.form-group textarea::placeholder {
+  color: rgb(160.770212766, 165.9234042553, 176.229787234);
+}
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+.form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: border-color 0.2s;
+  background: #ffffff;
+  cursor: pointer;
+}
+.form-group select:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+.reward-section {
+  border: 2px solid rgb(205.2829268293, 223.2926829268, 252.7170731707);
+  background: white;
+}
+.reward-section .info-text {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.reward-section .warning {
+  background: #fff3cd;
+  color: #856404;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  border: 1px solid #ffeeba;
+}
+
 /*# sourceMappingURL=main.css.map */

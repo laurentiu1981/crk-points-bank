@@ -11,7 +11,7 @@ import {
 import { PointsService } from './points.service';
 import { OAuthService } from '../oauth/oauth.service';
 import { AuthService } from '../auth/auth.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('points')
 export class PointsController {
@@ -210,6 +210,47 @@ export class PointsController {
         createdAt: r.createdAt,
         expiresAt: r.otpExpiresAt,
       })),
+    };
+  }
+
+  /**
+   * Credit/Reward points to a member (B2B only)
+   * Partner awards points to member using client credentials
+   * No member token required - this is a business-to-business operation
+   * Requires: Client credentials in body
+   */
+  @Post('credit')
+  async creditPoints(
+    @Body('client_id') clientId: string,
+    @Body('client_secret') clientSecret: string,
+    @Body('member_id') memberId: string,
+    @Body('amount') amount: number,
+    @Body('description') description?: string,
+    @Body('reason') reason?: string,
+  ) {
+    this.logger.log('=== CREDIT POINTS ENDPOINT (B2B) ===');
+
+    if (!clientId || !clientSecret || !memberId || !amount) {
+      throw new BadRequestException('Missing required parameters: client_id, client_secret, member_id, amount');
+    }
+
+    const result = await this.pointsService.creditPointsWithClientCredentials(
+      clientId,
+      clientSecret,
+      memberId,
+      amount,
+      description,
+      reason,
+    );
+
+    this.logger.log('=== END CREDIT POINTS ENDPOINT ===\n');
+
+    return {
+      success: result.success,
+      newBalance: result.newBalance,
+      transactionId: result.transactionId,
+      creditedAmount: amount,
+      message: 'Points credited successfully',
     };
   }
 }

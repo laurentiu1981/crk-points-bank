@@ -184,3 +184,150 @@ body {
     gap: $spacing-md;
     flex-wrap: wrap;
 }
+
+.alert {
+    padding: $spacing-lg;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-xl;
+    font-size: $font-size-base;
+    font-weight: 500;
+
+    &-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    &-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: $spacing-lg;
+    margin-top: $spacing-lg;
+}
+
+.product-card {
+    background: $background-light;
+    border: 2px solid $border-color;
+    border-radius: $radius-md;
+    padding: $spacing-lg;
+    text-align: center;
+    transition: all 0.3s;
+
+    &:hover {
+        border-color: $primary-color;
+        transform: translateY(-4px);
+        box-shadow: $shadow-lg;
+    }
+
+    .product-icon {
+        font-size: 48px;
+        margin-bottom: $spacing-md;
+    }
+
+    h3 {
+        font-size: $font-size-base;
+        margin-bottom: $spacing-sm;
+        color: $text-primary;
+    }
+
+    .product-price {
+        font-size: $font-size-lg;
+        font-weight: 700;
+        color: $primary-color;
+        margin-bottom: $spacing-lg;
+    }
+
+    form {
+        margin: 0;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+.form-group {
+    margin-bottom: $spacing-lg;
+
+    label {
+        display: block;
+        font-size: $font-size-sm;
+        color: $text-secondary;
+        margin-bottom: $spacing-xs;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    input[type="email"],
+    textarea {
+        width: 100%;
+        padding: $spacing-md;
+        border: 2px solid $border-color;
+        border-radius: $radius-md;
+        font-size: $font-size-base;
+        font-family: $font-family;
+        transition: border-color 0.2s;
+
+        &:focus {
+            outline: none;
+            border-color: $primary-color;
+        }
+
+        &::placeholder {
+            color: lighten($text-secondary, 20%);
+        }
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    select {
+        width: 100%;
+        padding: $spacing-md;
+        border: 2px solid $border-color;
+        border-radius: $radius-md;
+        font-size: $font-size-base;
+        font-family: $font-family;
+        transition: border-color 0.2s;
+        background: $white;
+        cursor: pointer;
+
+        &:focus {
+            outline: none;
+            border-color: $primary-color;
+        }
+    }
+}
+
+.reward-section {
+    border: 2px solid lighten($secondary-color, 30%);
+    background: lighten($secondary-color, 45%);
+
+    .info-text {
+        color: $text-secondary;
+        font-size: $font-size-sm;
+        margin-bottom: $spacing-sm;
+    }
+
+    .warning {
+        background: #fff3cd;
+        color: #856404;
+        padding: $spacing-sm $spacing-md;
+        border-radius: $radius-sm;
+        font-size: $font-size-sm;
+        margin-bottom: $spacing-lg;
+        border: 1px solid #ffeeba;
+    }
+}

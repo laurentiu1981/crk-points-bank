@@ -4,6 +4,7 @@ import { Repository, LessThan } from 'typeorm';
 import { Member } from '../entities/member.entity';
 import { OAuthClient } from '../entities/oauth-client.entity';
 import { RedemptionRequest } from '../entities/redemption-request.entity';
+import { CreditTransaction } from '../entities/credit-transaction.entity';
 import { randomInt } from 'crypto';
 
 @Injectable()
@@ -17,6 +18,8 @@ export class PointsService {
     private clientRepository: Repository<OAuthClient>,
     @InjectRepository(RedemptionRequest)
     private redemptionRepository: Repository<RedemptionRequest>,
+    @InjectRepository(CreditTransaction)
+    private creditRepository: Repository<CreditTransaction>,
   ) {}
 
   /**
@@ -290,6 +293,89 @@ export class PointsService {
     this.logger.debug(`Found ${requests.length} pending requests`);
 
     return requests;
+  }
+
+  /**
+   * Credit/Reward points using client credentials (B2B only)
+   * Partner rewards member using client_id/secret + member_id
+   * This is the ONLY way to credit points - no member token accepted
+   */
+  async creditPointsWithClientCredentials(
+    clientId: string,
+    clientSecret: string,
+    memberId: string,
+    amount: number,
+    description?: string,
+    reason?: string,
+  ): Promise<{ success: boolean; newBalance: number; transactionId: string }> {
+    this.logger.log('=== CREDIT POINTS WITH CLIENT CREDENTIALS ===');
+    this.logger.log(`Client ID: ${clientId}`);
+    this.logger.log(`Member ID: ${memberId}`);
+    this.logger.log(`Amount: ${amount} points`);
+    this.logger.log(`Description: ${description || 'none'}`);
+    this.logger.log(`Reason: ${reason || 'none'}`);
+
+    // Validate client credentials
+    const client = await this.clientRepository.findOne({
+      where: { clientId, active: true },
+    });
+
+    if (!client) {
+      this.logger.warn(`Client not found: ${clientId}`);
+      throw new NotFoundException('Client not found');
+    }
+
+    if (client.clientSecret !== clientSecret) {
+      this.logger.warn(`Invalid client secret for client: ${clientId}`);
+      throw new BadRequestException('Invalid client credentials');
+    }
+
+    this.logger.debug(`Client validated: ${client.clientName}`);
+
+    // Validate member exists
+    const member = await this.memberRepository.findOne({
+      where: { id: memberId, active: true },
+    });
+
+    if (!member) {
+      this.logger.warn(`Member not found: ${memberId}`);
+      throw new NotFoundException('Member not found');
+    }
+
+    this.logger.debug(`Member validated: ${member.email}`);
+
+    // Validate amount
+    if (amount <= 0) {
+      this.logger.warn('Invalid credit amount (must be positive)');
+      throw new BadRequestException('Credit amount must be positive');
+    }
+
+    // Add points
+    const currentPoints = parseFloat(member.points.toString());
+    member.points = currentPoints + amount;
+    await this.memberRepository.save(member);
+
+    // Create credit transaction record
+    const creditTransaction = this.creditRepository.create({
+      memberId: member.id,
+      member,
+      clientId: client.id,
+      client,
+      amount,
+      description,
+      reason,
+    });
+
+    const savedTransaction = await this.creditRepository.save(creditTransaction);
+
+    this.logger.log(`Points credited successfully. New balance: ${member.points}`);
+    this.logger.log('=== END CREDIT POINTS ===\n');
+
+    return {
+      success: true,
+      newBalance: parseFloat(member.points.toString()),
+      transactionId: savedTransaction.id,
+    };
   }
 
   /**

@@ -13,6 +13,7 @@ import { OAuthAuthorizationCode } from '../entities/oauth-authorization-code.ent
 import { OAuthAccessToken } from '../entities/oauth-access-token.entity';
 import { OAuthRefreshToken } from '../entities/oauth-refresh-token.entity';
 import { RedemptionRequest } from '../entities/redemption-request.entity';
+import { CreditTransaction } from '../entities/credit-transaction.entity';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { RedemptionRequest } from '../entities/redemption-request.entity';
           OAuthAccessToken,
           OAuthRefreshToken,
           RedemptionRequest,
+          CreditTransaction,
         ],
         synchronize: configService.get('NODE_ENV') === 'development',
         logging: configService.get('NODE_ENV') === 'development',

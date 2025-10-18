@@ -35,8 +35,132 @@ html(lang='en')
             label Member ID
             value= member.id
 
+      if successMessage
+        .alert.alert-success= successMessage
+
+      if errorMessage
+        .alert.alert-error= errorMessage
+
       .card
-        h2.card-title Quick Actions
-        .actions
-          button.btn.btn-secondary(disabled) 🛒 Buy Product (Coming Soon)
-          button.btn.btn-secondary(disabled) 🎁 Redeem Points (Coming Soon)
+        h2.card-title Shop with Points
+        p Use your points to purchase items from our catalog
+
+        .products-grid
+          .product-card
+            .product-icon 🎮
+            h3 Gaming Bundle
+            .product-price 50 points
+            form(method='POST', action='/redeem', onsubmit='return confirm("Redeem 50 points for Gaming Bundle?")')
+              input(type='hidden', name='amount', value='50')
+              input(type='hidden', name='description', value='Gaming Bundle Purchase')
+              button.btn.btn-primary(type='submit') Redeem
+
+          .product-card
+            .product-icon 🎧
+            h3 Premium Headphones
+            .product-price 100 points
+            form(method='POST', action='/redeem', onsubmit='return confirm("Redeem 100 points for Premium Headphones?")')
+              input(type='hidden', name='amount', value='100')
+              input(type='hidden', name='description', value='Premium Headphones Purchase')
+              button.btn.btn-primary(type='submit') Redeem
+
+          .product-card
+            .product-icon 🎁
+            h3 Gift Card $25
+            .product-price 200 points
+            form(method='POST', action='/redeem', onsubmit='return confirm("Redeem 200 points for $25 Gift Card?")')
+              input(type='hidden', name='amount', value='200')
+              input(type='hidden', name='description', value='Gift Card $25 Purchase')
+              button.btn.btn-primary(type='submit') Redeem
+
+          .product-card
+            .product-icon 💎
+            h3 VIP Package
+            .product-price 500 points
+            form(method='POST', action='/redeem', onsubmit='return confirm("Redeem 500 points for VIP Package?")')
+              input(type='hidden', name='amount', value='500')
+              input(type='hidden', name='description', value='VIP Package Purchase')
+              button.btn.btn-primary(type='submit') Redeem
+
+      .card
+        h2.card-title Custom Redemption
+        p Redeem any amount of points
+
+        form(method='POST', action='/redeem', onsubmit='return validateCustomRedemption()')
+          .form-group
+            label(for='customAmount') Amount (points)
+            input#customAmount(type='number', name='amount', min='1', required, placeholder='Enter amount')
+
+          .form-group
+            label(for='customDescription') Description
+            input#customDescription(type='text', name='description', required, placeholder='What are you redeeming for?')
+
+          button.btn.btn-primary(type='submit') 🎁 Redeem Points
+
+      .card.reward-section
+        h2.card-title Reward Points (Demo)
+        p.info-text Simulate rewarding points for member actions (e.g., purchases, referrals)
+        p.warning ⚠️ This is a B2B action - normally triggered by backend events, not manual user actions
+
+        form(method='POST', action='/credit', onsubmit='return validateReward()')
+          .form-group
+            label(for='rewardAmount') Amount (points)
+            input#rewardAmount(type='number', name='amount', min='1', required, placeholder='Enter amount')
+
+          .form-group
+            label(for='rewardDescription') Description
+            input#rewardDescription(type='text', name='description', required, placeholder='What is this reward for?')
+
+          .form-group
+            label(for='rewardReason') Reason (Category)
+            select#rewardReason(name='reason', required)
+              option(value='') Select reason...
+              option(value='purchase_reward') Purchase Reward
+              option(value='signup_bonus') Signup Bonus
+              option(value='referral') Referral Bonus
+              option(value='promotion') Promotion
+              option(value='loyalty') Loyalty Reward
+              option(value='other') Other
+
+          button.btn.btn-secondary(type='submit') ✨ Award Points
+
+    script.
+      function validateCustomRedemption() {
+        const amount = parseInt(document.getElementById('customAmount').value);
+        const description = document.getElementById('customDescription').value.trim();
+
+        if (amount <= 0) {
+          alert('Amount must be greater than 0');
+          return false;
+        }
+
+        if (!description) {
+          alert('Please enter a description');
+          return false;
+        }
+
+        return confirm(`Redeem ${amount} points for "${description}"?`);
+      }
+
+      function validateReward() {
+        const amount = parseInt(document.getElementById('rewardAmount').value);
+        const description = document.getElementById('rewardDescription').value.trim();
+        const reason = document.getElementById('rewardReason').value;
+
+        if (amount <= 0) {
+          alert('Amount must be greater than 0');
+          return false;
+        }
+
+        if (!description) {
+          alert('Please enter a description');
+          return false;
+        }
+
+        if (!reason) {
+          alert('Please select a reason');
+          return false;
+        }
+
+        return confirm(`Award ${amount} points for "${description}"?`);
+      }

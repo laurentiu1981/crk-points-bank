@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  Post,
+  Body,
   Query,
   Request,
   Response,
@@ -18,16 +20,15 @@ export class AppController {
    * Home page - shows login button if not logged in, dashboard if logged in
    */
   @Get()
-  @Render('home')
-  async home(@Request() req) {
+  async home(@Request() req, @Response() res) {
     if (req.session.member) {
       // Member is logged in, redirect to dashboard
-      return { redirect: '/dashboard' };
+      return res.redirect('/dashboard');
     }
 
-    return {
+    return res.render('home', {
       pointsBankUrl: process.env.POINTS_BANK_URL || 'http://localhost:3000',
-    };
+    });
   }
 
   /**
@@ -91,15 +92,102 @@ export class AppController {
    * Dashboard - shows member info and points
    */
   @Get('dashboard')
-  @Render('dashboard')
-  async dashboard(@Request() req, @Response() res) {
+  async dashboard(
+    @Query('success') success: string,
+    @Query('credit') credit: string,
+    @Query('amount') amount: string,
+    @Query('error') error: string,
+    @Request() req,
+    @Response() res
+  ) {
     if (!req.session.member) {
       return res.redirect('/');
     }
 
-    return {
+    let successMessage = null;
+    if (success === 'true') {
+      successMessage = `Successfully redeemed ${amount} points!`;
+    } else if (credit === 'true') {
+      successMessage = `Successfully rewarded ${amount} points!`;
+    }
+
+    return res.render('dashboard', {
       member: req.session.member,
-    };
+      successMessage,
+      errorMessage: error ? decodeURIComponent(error) : null,
+    });
+  }
+
+  /**
+   * Redeem points using OAuth access token
+   */
+  @Post('redeem')
+  async redeemPoints(
+    @Body('amount') amount: number,
+    @Body('description') description: string,
+    @Request() req,
+    @Response() res
+  ) {
+    if (!req.session.member || !req.session.accessToken) {
+      return res.redirect('/');
+    }
+
+    try {
+      const result = await this.appService.redeemPoints(
+        req.session.accessToken,
+        amount,
+        description
+      );
+
+      // Update member info in session with new balance
+      req.session.member.points = result.newBalance;
+
+      // Redirect to dashboard with success message
+      return res.redirect('/dashboard?success=true&amount=' + amount);
+    } catch (error) {
+      console.error('Redemption error:', error.response?.data || error.message);
+
+      // Redirect to dashboard with error message
+      const errorMsg = error.response?.data?.message || 'Redemption failed';
+      return res.redirect('/dashboard?error=' + encodeURIComponent(errorMsg));
+    }
+  }
+
+  /**
+   * Credit/Reward points to member (B2B action)
+   */
+  @Post('credit')
+  async creditPoints(
+    @Body('amount') amount: number,
+    @Body('description') description: string,
+    @Body('reason') reason: string,
+    @Request() req,
+    @Response() res
+  ) {
+    if (!req.session.member) {
+      return res.redirect('/');
+    }
+
+    try {
+      const result = await this.appService.creditPoints(
+        req.session.member.id,
+        amount,
+        description,
+        reason
+      );
+
+      // Update member info in session with new balance
+      req.session.member.points = result.newBalance;
+
+      // Redirect to dashboard with success message
+      return res.redirect('/dashboard?credit=true&amount=' + amount);
+    } catch (error) {
+      console.error('Credit error:', error.response?.data || error.message);
+
+      // Redirect to dashboard with error message
+      const errorMsg = error.response?.data?.message || 'Credit failed';
+      return res.redirect('/dashboard?error=' + encodeURIComponent(errorMsg));
+    }
   }
 
   /**
