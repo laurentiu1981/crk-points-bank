@@ -5,7 +5,9 @@
   "scripts": {
     "styles:watch:api": "sass --watch apps/crk-points-bank/src/styles:apps/crk-points-bank/src/public/css",
     "styles:watch:partner": "sass --watch apps/partner-app/src/styles:apps/partner-app/src/public/css",
-    "styles:build": "sass apps/crk-points-bank/src/styles:apps/crk-points-bank/src/public/css && sass apps/partner-app/src/styles:apps/partner-app/src/public/css"
+    "styles:build": "sass apps/crk-points-bank/src/styles:apps/crk-points-bank/src/public/css && sass apps/partner-app/src/styles:apps/partner-app/src/public/css",
+    "api:dev": "yarn && yarn styles:watch:api & nodemon --config apps/crk-points-bank/nodemon.json --verbose",
+    "partner-app:dev": "yarn && yarn styles:watch:partner & nodemon --config apps/partner-app/nodemon.json --verbose"
   },
   "private": true,
   "dependencies": {
@@ -60,6 +62,7 @@
     "jest": "^30.0.2",
     "jest-environment-node": "^30.0.2",
     "jest-util": "^30.0.2",
+    "nodemon": "^3.1.10",
     "nx": "21.6.5",
     "prettier": "^2.6.2",
     "ts-jest": "^29.4.0",

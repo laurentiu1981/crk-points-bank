@@ -1,0 +1,16 @@
+{
+  "watch": [
+    "apps/partner-app/src"
+  ],
+  "ignore": [
+    "**/node_modules/**",
+    "**/*.map",
+    "**/dist/**"
+  ],
+  "ext": "ts,json",
+  "delay": 100,
+  "exec": "cd apps/partner-app && node --inspect=0.0.0.0:9229 -r ts-node/register/transpile-only -r tsconfig-paths/register ./src/main.ts",
+  "env": {
+    "TS_NODE_PROJECT": "./tsconfig.app.json"
+  }
+}
