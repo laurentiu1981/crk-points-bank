@@ -36,6 +36,18 @@ html(lang='en')
               strong View your points balance
               span See how many points you have
 
+        if hasPayWithPointsScope
+          .permission-item.critical
+            .permission-icon 💳
+            .permission-text
+              strong Link debit card for payments with points
+              span Redeem points and issue points transactions
+          .warning-box
+            .warning-icon ⚠️
+            .warning-text
+              strong Important: This grants long-term access
+              p This permission creates a non-expiring token that will remain active until you manually revoke it. The app will be able to process point transactions on your behalf.
+
       form(method='POST', action='/api/oauth/consent')
         .actions
           button.btn-deny(type='button', onclick="window.location.href='/api/oauth/deny'") Deny

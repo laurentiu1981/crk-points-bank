@@ -17,7 +17,7 @@ export class OAuthAccessToken {
   @Column({ name: 'access_token', unique: true })
   accessToken: string;
 
-  @Column({ name: 'access_token_expires_at', type: 'timestamp' })
+  @Column({ name: 'access_token_expires_at', type: 'timestamp', nullable: true })
   accessTokenExpiresAt: Date;
 
   @Column({ type: 'simple-array', nullable: true })

@@ -101,6 +101,11 @@ body {
     background: $background-light;
     border-radius: $radius-md;
     margin-bottom: 10px;
+
+    &.critical {
+        background: #fff8f0;
+        border: 2px solid #ff9800;
+    }
 }
 
 .permission-icon {
@@ -114,6 +119,10 @@ body {
     justify-content: center;
     margin-right: $spacing-lg;
     font-size: 18px;
+
+    .critical & {
+        background: #ff9800;
+    }
 }
 
 .permission-text {
@@ -129,6 +138,41 @@ body {
     span {
         color: $text-secondary;
         font-size: $font-size-xs;
+    }
+}
+
+.warning-box {
+    background: #fffbf0;
+    border: 2px solid #ff9800;
+    border-radius: $radius-md;
+    padding: $spacing-md $spacing-lg;
+    margin: $spacing-md 0 $spacing-lg 0;
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+}
+
+.warning-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.warning-text {
+    flex: 1;
+
+    strong {
+        display: block;
+        color: #e65100;
+        font-size: $font-size-base;
+        margin-bottom: $spacing-xs;
+    }
+
+    p {
+        color: #f57c00;
+        font-size: $font-size-xs;
+        line-height: 1.4;
+        margin: 0;
     }
 }
 

@@ -27,13 +27,14 @@ export class MemberService {
    */
   async getActiveSessions(memberId: string) {
     // Get active access tokens (not expired and not revoked)
+    // Include non-expiring tokens (card linking) where expiresAt is null
     const now = new Date();
     const activeSessions = await this.accessTokenRepository
       .createQueryBuilder('token')
       .leftJoinAndSelect('token.client', 'client')
       .leftJoinAndSelect('token.member', 'member')
       .where('token.member_id = :memberId', { memberId })
-      .andWhere('token.access_token_expires_at > :now', { now })
+      .andWhere('(token.access_token_expires_at > :now OR token.access_token_expires_at IS NULL)', { now })
       .andWhere('token.revoked = :revoked', { revoked: false })
       .orderBy('token.created_at', 'DESC')
       .getMany();
@@ -46,6 +47,7 @@ export class MemberService {
       createdAt: session.createdAt,
       expiresAt: session.accessTokenExpiresAt,
       lastUsed: session.createdAt, // No updatedAt field, use createdAt
+      isNonExpiring: session.accessTokenExpiresAt === null,
     }));
   }
 

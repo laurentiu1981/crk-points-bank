@@ -23,3 +23,31 @@ html(lang='en')
 
         a.btn.btn-primary.btn-large(href='/login')
           | 🔐 Login with Points Bank
+
+    .container.services-section
+      h2.section-title Our Services
+
+      .service-grid
+        .service-card
+          .service-icon 🛍️
+          h3 Shop with Points
+          p Browse our catalog and redeem your Points Bank points for amazing products and services.
+          a.btn.btn-secondary(href='/login') Get Started
+
+        .service-card.highlight
+          .service-icon 💳
+          h3 Pay with Points
+          p Link your debit card to automatically use points for everyday purchases at checkout.
+          .feature-badge NEW
+          a.btn.btn-primary(href='/link-card') Link Your Card
+
+      .info-box
+        h3 💡 How Card Linking Works
+        ol
+          li Connect your Points Bank account securely via OAuth
+          li Grant permission for payment processing with points
+          li Shop anywhere and automatically redeem points at checkout
+          li Earn points on every purchase and track your balance
+        p.note
+          strong Note:
+          | Card linking creates a secure, non-expiring token that allows us to process point transactions on your behalf. You can revoke access anytime from your Points Bank member dashboard.

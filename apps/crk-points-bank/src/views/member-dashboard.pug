@@ -62,7 +62,10 @@ html(lang='en')
                       |  #{new Date(session.createdAt).toLocaleString()}
                     p
                       strong Expires:
-                      |  #{new Date(session.expiresAt).toLocaleString()}
+                      if session.isNonExpiring
+                        span.never-expires  Never (card linking token)
+                      else
+                        |  #{new Date(session.expiresAt).toLocaleString()}
                     if session.lastUsed
                       p
                         strong Last Used:

@@ -1,0 +1,150 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Card Linking - Partner Shopping App
+    link(rel='stylesheet', href='/css/main.css')
+    style.
+      .result-container {
+        max-width: 600px;
+        margin: 4rem auto;
+        padding: 0 2rem;
+      }
+      .result-card {
+        background: white;
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .result-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+      }
+      .result-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #1e293b;
+      }
+      .result-message {
+        font-size: 1.1rem;
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+      }
+      .result-details {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        text-align: left;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      .detail-row:last-child {
+        border-bottom: none;
+      }
+      .detail-label {
+        font-weight: 600;
+        color: #475569;
+      }
+      .detail-value {
+        color: #1e293b;
+        font-family: monospace;
+      }
+      .scope-list {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .scope-badge {
+        background: #fff8f0;
+        color: #f57c00;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border: 1px solid #ff9800;
+      }
+      .warning-box {
+        background: #fffbf0;
+        border: 2px solid #ff9800;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+        text-align: left;
+      }
+      .warning-box strong {
+        color: #e65100;
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+      .warning-box p {
+        color: #f57c00;
+        margin: 0;
+        font-size: 0.95rem;
+      }
+      .close-instruction {
+        font-size: 1.1rem;
+        color: #64748b;
+        margin-top: 2rem;
+        font-weight: 500;
+      }
+      .error-message {
+        color: #dc2626;
+        background: #fee2e2;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+      }
+  body
+    .result-container
+      .result-card
+        if success
+          .result-icon ✅
+          h1.result-title Card Linked Successfully!
+          p.result-message Your debit card has been successfully linked to your Points Bank loyalty account.
+
+          .result-details
+            .detail-row
+              .detail-label Member
+              .detail-value= member.firstName + ' ' + member.lastName
+            .detail-row
+              .detail-label Email
+              .detail-value= member.email
+            .detail-row
+              .detail-label Points Balance
+              .detail-value= member.points + ' points'
+            .detail-row
+              .detail-label Token (Preview)
+              .detail-value= tokenPreview
+            .detail-row
+              .detail-label Expires
+              .detail-value= hasExpiration ? 'Yes (standard token)' : 'Never (non-expiring)'
+            .detail-row
+              .detail-label Scopes
+              .scope-list
+                each scope in scopes
+                  span.scope-badge= scope
+
+          .warning-box
+            strong 🔒 Important Information
+            p This token grants long-term access to your account for payment processing. The card processor has stored this token securely and will use it to process point transactions when you make purchases with your linked card.
+
+          p.close-instruction You can now close this page and continue shopping.
+
+        else
+          .result-icon ❌
+          h1.result-title Card Linking Failed
+          .error-message= error
+          p.result-message
+            | Something went wrong during the card linking process.
+            | Please try again or contact support if the problem persists.
+
+          p.close-instruction You can close this page and try again.

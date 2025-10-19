@@ -496,3 +496,122 @@ body {
         box-shadow: $shadow-md;
     }
 }
+
+// Services Section (Home Page)
+.services-section {
+    padding: $spacing-xxxl 0;
+}
+
+.section-title {
+    font-size: $font-size-xxl;
+    text-align: center;
+    margin-bottom: $spacing-xxxl;
+    color: $text-primary;
+}
+
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: $spacing-xl;
+    margin-bottom: $spacing-xxxl;
+}
+
+.service-card {
+    background: $white;
+    border: 2px solid $border-color;
+    border-radius: $radius-lg;
+    padding: $spacing-xxl;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+
+    &:hover {
+        border-color: $primary-color;
+        transform: translateY(-8px);
+        box-shadow: $shadow-lg;
+    }
+
+    &.highlight {
+        border-color: #ff9800;
+        background: linear-gradient(135deg, #fff8f0 0%, #ffffff 100%);
+
+        &:hover {
+            border-color: #f57c00;
+            box-shadow: 0 10px 30px rgba(255, 152, 0, 0.2);
+        }
+    }
+
+    .service-icon {
+        font-size: 64px;
+        margin-bottom: $spacing-lg;
+    }
+
+    h3 {
+        font-size: $font-size-xl;
+        margin-bottom: $spacing-md;
+        color: $text-primary;
+    }
+
+    p {
+        font-size: $font-size-base;
+        color: $text-secondary;
+        margin-bottom: $spacing-xl;
+        line-height: 1.6;
+    }
+
+    .feature-badge {
+        position: absolute;
+        top: $spacing-md;
+        right: $spacing-md;
+        background: #ff9800;
+        color: $white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: $font-size-xs;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+}
+
+.info-box {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: $radius-lg;
+    padding: $spacing-xxl;
+    max-width: 800px;
+    margin: 0 auto;
+
+    h3 {
+        font-size: $font-size-xl;
+        margin-bottom: $spacing-lg;
+        color: $text-primary;
+    }
+
+    ol {
+        margin-bottom: $spacing-lg;
+        padding-left: $spacing-xl;
+        color: $text-primary;
+
+        li {
+            font-size: $font-size-base;
+            line-height: 1.8;
+            margin-bottom: $spacing-sm;
+        }
+    }
+
+    .note {
+        background: #fffbf0;
+        border: 1px solid #ff9800;
+        border-radius: $radius-md;
+        padding: $spacing-md $spacing-lg;
+        font-size: $font-size-sm;
+        color: #f57c00;
+        line-height: 1.6;
+
+        strong {
+            color: #e65100;
+            display: block;
+            margin-bottom: $spacing-xs;
+        }
+    }
+}

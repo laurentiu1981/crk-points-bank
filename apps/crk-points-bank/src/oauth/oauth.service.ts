@@ -163,12 +163,22 @@ export class OAuthService {
     this.logger.debug(`Scope: ${scope.join(', ')}`);
 
     const token = randomBytes(32).toString('hex');
-    const expiresAt = new Date();
-    const lifetime = this.configService.get<number>('OAUTH_ACCESS_TOKEN_LIFETIME');
-    expiresAt.setSeconds(expiresAt.getSeconds() + lifetime);
 
-    this.logger.debug(`Access token lifetime: ${lifetime} seconds`);
-    this.logger.debug(`Access token expires at: ${expiresAt.toISOString()}`);
+    // Card linking tokens (pay-with-points scope) do not expire
+    // They can only be revoked manually
+    let expiresAt: Date = null;
+
+    if (scope.includes('pay-with-points')) {
+      this.logger.debug('🔗 Card linking scope detected - creating NON-EXPIRING token');
+      this.logger.debug('⚠️  Token can only be revoked manually');
+      expiresAt = null;
+    } else {
+      expiresAt = new Date();
+      const lifetime = this.configService.get<number>('OAUTH_ACCESS_TOKEN_LIFETIME');
+      expiresAt.setSeconds(expiresAt.getSeconds() + lifetime);
+      this.logger.debug(`Access token lifetime: ${lifetime} seconds`);
+      this.logger.debug(`Access token expires at: ${expiresAt.toISOString()}`);
+    }
 
     const accessToken = this.accessTokenRepository.create({
       accessToken: token,
@@ -270,11 +280,18 @@ export class OAuthService {
 
     this.logger.debug(`Access token found for member: ${accessToken.member.email}`);
     this.logger.debug(`Scope: ${accessToken.scope.join(', ')}`);
-    this.logger.debug(`Expires at: ${accessToken.accessTokenExpiresAt.toISOString()}`);
 
-    if (accessToken.accessTokenExpiresAt < new Date()) {
-      this.logger.warn(`Access token expired at: ${accessToken.accessTokenExpiresAt.toISOString()}`);
-      throw new BadRequestException('Access token expired');
+    // Check expiration only if the token has an expiration date
+    // Tokens with pay-with-points scope never expire (accessTokenExpiresAt is null)
+    if (accessToken.accessTokenExpiresAt) {
+      this.logger.debug(`Expires at: ${accessToken.accessTokenExpiresAt.toISOString()}`);
+
+      if (accessToken.accessTokenExpiresAt < new Date()) {
+        this.logger.warn(`Access token expired at: ${accessToken.accessTokenExpiresAt.toISOString()}`);
+        throw new BadRequestException('Access token expired');
+      }
+    } else {
+      this.logger.debug('Non-expiring token (card linking)');
     }
 
     this.logger.debug('Access token validated successfully');

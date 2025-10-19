@@ -12,5 +12,6 @@ declare module 'express-session' {
       points: number;
     };
     oauthState?: string;
+    oauthFlow?: 'regular' | 'card-linking';
   }
 }

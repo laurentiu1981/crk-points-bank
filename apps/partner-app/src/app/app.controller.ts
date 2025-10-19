@@ -38,6 +38,7 @@ export class AppController {
   async login(@Request() req, @Response() res) {
     const state = randomBytes(16).toString('hex');
     req.session.oauthState = state;
+    req.session.oauthFlow = 'regular'; // Track flow type
 
     const authUrl = new URL(`${process.env.POINTS_BANK_URL || 'http://localhost:3000'}/api/oauth/authorize`);
     authUrl.searchParams.append('client_id', process.env.OAUTH_CLIENT_ID);
@@ -50,7 +51,27 @@ export class AppController {
   }
 
   /**
+   * Initiate card linking OAuth flow (pay-with-points scope)
+   */
+  @Get('link-card')
+  async linkCard(@Request() req, @Response() res) {
+    const state = randomBytes(16).toString('hex');
+    req.session.oauthState = state;
+    req.session.oauthFlow = 'card-linking'; // Track flow type
+
+    const authUrl = new URL(`${process.env.POINTS_BANK_URL || 'http://localhost:3000'}/api/oauth/authorize`);
+    authUrl.searchParams.append('client_id', process.env.OAUTH_CLIENT_ID);
+    authUrl.searchParams.append('redirect_uri', process.env.OAUTH_REDIRECT_URI);
+    authUrl.searchParams.append('response_type', 'code');
+    authUrl.searchParams.append('scope', 'pay-with-points');
+    authUrl.searchParams.append('state', state);
+
+    return res.redirect(authUrl.toString());
+  }
+
+  /**
    * OAuth callback - exchange code for token
+   * Handles both regular login and card linking flows
    */
   @Get('callback')
   async callback(
@@ -60,32 +81,76 @@ export class AppController {
     @Request() req,
     @Response() res
   ) {
+    const flowType = req.session.oauthFlow || 'regular';
+
     // Handle errors
     if (error) {
+      if (flowType === 'card-linking') {
+        return res.render('card-link-result', {
+          success: false,
+          error: error === 'access_denied' ? 'You denied the card linking request' : error,
+        });
+      }
       return res.redirect(`/?error=${encodeURIComponent(error)}`);
     }
 
     // Validate state
     if (!state || state !== req.session.oauthState) {
+      if (flowType === 'card-linking') {
+        return res.render('card-link-result', {
+          success: false,
+          error: 'Invalid state parameter - possible CSRF attack',
+        });
+      }
       throw new BadRequestException('Invalid state parameter');
     }
 
-    // Clear state
+    // Clear state and flow type
     delete req.session.oauthState;
+    delete req.session.oauthFlow;
 
-    // Exchange code for tokens
-    const tokens = await this.appService.exchangeCodeForToken(code);
+    try {
+      // Exchange code for tokens
+      const tokens = await this.appService.exchangeCodeForToken(code);
 
-    // Save tokens in session
-    req.session.accessToken = tokens.access_token;
-    req.session.refreshToken = tokens.refresh_token;
+      if (flowType === 'card-linking') {
+        // Card linking flow - show confirmation and close
+        const memberInfo = await this.appService.getMemberInfo(tokens.access_token);
 
-    // Get member info
-    const memberInfo = await this.appService.getMemberInfo(tokens.access_token);
-    req.session.member = memberInfo;
+        // In a real app, you would store this token in a secure backend database
+        // associated with the member's card/account for future transactions
+        // For this demo, we'll just show the confirmation
 
-    // Redirect to dashboard
-    return res.redirect('/dashboard');
+        return res.render('card-link-result', {
+          success: true,
+          member: memberInfo,
+          tokenPreview: tokens.access_token.substring(0, 20) + '...',
+          hasExpiration: !!tokens.expires_in,
+          scopes: tokens.scope.split(' '),
+        });
+      } else {
+        // Regular login flow - save to session and redirect to dashboard
+        req.session.accessToken = tokens.access_token;
+        req.session.refreshToken = tokens.refresh_token;
+
+        // Get member info
+        const memberInfo = await this.appService.getMemberInfo(tokens.access_token);
+        req.session.member = memberInfo;
+
+        // Redirect to dashboard
+        return res.redirect('/dashboard');
+      }
+    } catch (error) {
+      console.error('OAuth callback error:', error.response?.data || error.message);
+
+      if (flowType === 'card-linking') {
+        return res.render('card-link-result', {
+          success: false,
+          error: 'Failed to complete card linking. Please try again.',
+        });
+      }
+      return res.redirect('/?error=Authentication failed');
+    }
   }
 
   /**

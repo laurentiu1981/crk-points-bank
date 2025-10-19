@@ -187,6 +187,15 @@ body {
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
 }
 
+.session-card:has(.never-expires) {
+  border-color: #ff9800;
+  background: #fffef8;
+}
+
+.session-card:has(.never-expires):hover {
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+}
+
 .session-header {
   display: flex;
   align-items: center;
@@ -229,6 +238,13 @@ body {
   font-weight: 500;
 }
 
+.scope-badge:contains("pay-with-points"),
+.session-scopes:has([data-scope="pay-with-points"]) .scope-badge:first-of-type {
+  background: #fff8f0;
+  color: #f57c00;
+  border: 1px solid #ff9800;
+}
+
 .session-details {
   display: flex;
   justify-content: space-between;
@@ -243,6 +259,17 @@ body {
 
 .session-meta strong {
   color: #475569;
+}
+
+.never-expires {
+  display: inline-block;
+  background: #fff8f0;
+  color: #f57c00;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid #ff9800;
 }
 
 /* Transactions List */

@@ -188,6 +188,7 @@ export class OAuthController {
       memberEmail: req.session.memberEmail,
       hasProfileScope: scopes.includes('profile'),
       hasPointsScope: scopes.includes('points'),
+      hasPayWithPointsScope: scopes.includes('pay-with-points'),
     });
   }
 
@@ -301,20 +302,29 @@ export class OAuthController {
         redirectUri
       );
 
-      const response = {
+      // For non-expiring tokens (card linking), expires_in should not be present
+      const response: any = {
         access_token: tokens.accessToken.accessToken,
         token_type: 'Bearer',
-        expires_in: Math.floor(
-          (tokens.accessToken.accessTokenExpiresAt.getTime() - Date.now()) / 1000
-        ),
         refresh_token: tokens.refreshToken.refreshToken,
         scope: tokens.accessToken.scope.join(' '),
       };
 
+      // Only include expires_in if token has expiration
+      if (tokens.accessToken.accessTokenExpiresAt) {
+        response.expires_in = Math.floor(
+          (tokens.accessToken.accessTokenExpiresAt.getTime() - Date.now()) / 1000
+        );
+      }
+
       this.logger.log('Response:');
       this.logger.log(`  Access Token: ${response.access_token.substring(0, 20)}...`);
       this.logger.log(`  Token Type: ${response.token_type}`);
-      this.logger.log(`  Expires In: ${response.expires_in} seconds`);
+      if (response.expires_in !== undefined) {
+        this.logger.log(`  Expires In: ${response.expires_in} seconds`);
+      } else {
+        this.logger.log(`  Expires In: NEVER (non-expiring card linking token)`);
+      }
       this.logger.log(`  Refresh Token: ${response.refresh_token.substring(0, 20)}...`);
       this.logger.log(`  Scope: ${response.scope}`);
       this.logger.log('=== END TOKEN EXCHANGE ===\n');
@@ -335,20 +345,29 @@ export class OAuthController {
         clientSecret
       );
 
-      const response = {
+      // For non-expiring tokens (card linking), expires_in should not be present
+      const response: any = {
         access_token: tokens.accessToken.accessToken,
         token_type: 'Bearer',
-        expires_in: Math.floor(
-          (tokens.accessToken.accessTokenExpiresAt.getTime() - Date.now()) / 1000
-        ),
         refresh_token: tokens.refreshToken.refreshToken,
         scope: tokens.accessToken.scope.join(' '),
       };
 
+      // Only include expires_in if token has expiration
+      if (tokens.accessToken.accessTokenExpiresAt) {
+        response.expires_in = Math.floor(
+          (tokens.accessToken.accessTokenExpiresAt.getTime() - Date.now()) / 1000
+        );
+      }
+
       this.logger.log('Response:');
       this.logger.log(`  Access Token: ${response.access_token.substring(0, 20)}...`);
       this.logger.log(`  Token Type: ${response.token_type}`);
-      this.logger.log(`  Expires In: ${response.expires_in} seconds`);
+      if (response.expires_in !== undefined) {
+        this.logger.log(`  Expires In: ${response.expires_in} seconds`);
+      } else {
+        this.logger.log(`  Expires In: NEVER (non-expiring card linking token)`);
+      }
       this.logger.log(`  Refresh Token: ${response.refresh_token.substring(0, 20)}...`);
       this.logger.log(`  Scope: ${response.scope}`);
       this.logger.log('=== END TOKEN REFRESH ===\n');
@@ -392,6 +411,19 @@ export class OAuthController {
 
     if (accessToken.scope.includes('points')) {
       userInfo.points = accessToken.member.points;
+    }
+
+    // pay-with-points scope includes both profile and points data
+    // plus a flag indicating card linking capability
+    if (accessToken.scope.includes('pay-with-points')) {
+      userInfo.id = accessToken.member.id;
+      userInfo.email = accessToken.member.email;
+      userInfo.firstName = accessToken.member.firstName;
+      userInfo.lastName = accessToken.member.lastName;
+      userInfo.points = accessToken.member.points;
+      userInfo.cardLinkingEnabled = true;
+      userInfo.canRedeemPoints = true;
+      userInfo.canIssuePoints = true;
     }
 
     this.logger.log(`Response: ${JSON.stringify(userInfo, null, 2)}`);
