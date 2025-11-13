@@ -4,7 +4,7 @@ import { Repository, LessThan } from 'typeorm';
 import { Member } from '../entities/member.entity';
 import { OAuthClient } from '../entities/oauth-client.entity';
 import { RedemptionRequest } from '../entities/redemption-request.entity';
-import { CreditTransaction } from '../entities/credit-transaction.entity';
+import { Transaction } from '../entities/transaction.entity';
 import { randomInt } from 'crypto';
 
 @Injectable()
@@ -18,8 +18,8 @@ export class PointsService {
     private clientRepository: Repository<OAuthClient>,
     @InjectRepository(RedemptionRequest)
     private redemptionRepository: Repository<RedemptionRequest>,
-    @InjectRepository(CreditTransaction)
-    private creditRepository: Repository<CreditTransaction>,
+    @InjectRepository(Transaction)
+    private transactionRepository: Repository<Transaction>,
   ) {}
 
   /**
@@ -55,13 +55,29 @@ export class PointsService {
     member.points = currentPoints - amount;
     await this.memberRepository.save(member);
 
+    // Create transaction record
+    const transaction = this.transactionRepository.create({
+      memberId: member.id,
+      member,
+      clientId: client.id,
+      client,
+      type: 'debit',
+      method: 'oauth_direct',
+      amount,
+      description,
+      status: null, // Direct redemptions are instant (no approval needed)
+    });
+
+    const savedTransaction = await this.transactionRepository.save(transaction);
+
     this.logger.log(`Points redeemed successfully. New balance: ${member.points}`);
+    this.logger.log(`Transaction ID: ${savedTransaction.id}`);
     this.logger.log('=== END DIRECT REDEMPTION ===\n');
 
     return {
       success: true,
       newBalance: parseFloat(member.points.toString()),
-      transactionId: `${Date.now()}-${member.id.substring(0, 8)}`,
+      transactionId: savedTransaction.id,
     };
   }
 
@@ -230,14 +246,31 @@ export class PointsService {
     request.completedAt = new Date();
     await this.redemptionRepository.save(request);
 
+    // Create unified transaction record
+    const transaction = this.transactionRepository.create({
+      memberId: request.member.id,
+      member: request.member,
+      clientId: request.client.id,
+      client: request.client,
+      type: 'debit',
+      method: 'otp_approval',
+      amount: parseFloat(request.amount.toString()),
+      description: request.description,
+      status: 'approved',
+      completedAt: request.completedAt,
+    });
+
+    const savedTransaction = await this.transactionRepository.save(transaction);
+
     this.logger.log(`Redemption approved. Points deducted: ${request.amount}`);
     this.logger.log(`New balance: ${request.member.points}`);
+    this.logger.log(`Transaction ID: ${savedTransaction.id}`);
     this.logger.log('=== END APPROVE REDEMPTION ===\n');
 
     return {
       success: true,
       newBalance: parseFloat(request.member.points.toString()),
-      transactionId: request.id,
+      transactionId: savedTransaction.id,
     };
   }
 
@@ -355,20 +388,23 @@ export class PointsService {
     member.points = currentPoints + amount;
     await this.memberRepository.save(member);
 
-    // Create credit transaction record
-    const creditTransaction = this.creditRepository.create({
+    // Create unified transaction record
+    const transaction = this.transactionRepository.create({
       memberId: member.id,
       member,
       clientId: client.id,
       client,
+      type: 'credit',
+      method: reason || 'partner_credit',
       amount,
       description,
-      reason,
+      status: null, // Credits are instant
     });
 
-    const savedTransaction = await this.creditRepository.save(creditTransaction);
+    const savedTransaction = await this.transactionRepository.save(transaction);
 
     this.logger.log(`Points credited successfully. New balance: ${member.points}`);
+    this.logger.log(`Transaction ID: ${savedTransaction.id}`);
     this.logger.log('=== END CREDIT POINTS ===\n');
 
     return {

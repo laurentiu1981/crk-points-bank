@@ -48,11 +48,11 @@ html(lang='en')
                     p
                       strong Partner:
                       |  #{tx.partnerName}
-                    if tx.type === 'credit' && tx.reason
+                    if tx.method
                       p
-                        strong Reason:
-                        |  #{tx.reason}
-                    if tx.type === 'redemption' && tx.status
+                        strong Method:
+                        |  #{tx.method}
+                    if tx.status
                       p
                         strong Status:
                         |  #{tx.status}

@@ -6,8 +6,7 @@ import { AuthModule } from '../auth/auth.module';
 import { Member } from '../entities/member.entity';
 import { OAuthAccessToken } from '../entities/oauth-access-token.entity';
 import { OAuthRefreshToken } from '../entities/oauth-refresh-token.entity';
-import { RedemptionRequest } from '../entities/redemption-request.entity';
-import { CreditTransaction } from '../entities/credit-transaction.entity';
+import { Transaction } from '../entities/transaction.entity';
 
 @Module({
   imports: [
@@ -15,8 +14,7 @@ import { CreditTransaction } from '../entities/credit-transaction.entity';
       Member,
       OAuthAccessToken,
       OAuthRefreshToken,
-      RedemptionRequest,
-      CreditTransaction,
+      Transaction,
     ]),
     AuthModule,
   ],

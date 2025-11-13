@@ -4,8 +4,7 @@ import { Repository, MoreThan } from 'typeorm';
 import { Member } from '../entities/member.entity';
 import { OAuthAccessToken } from '../entities/oauth-access-token.entity';
 import { OAuthRefreshToken } from '../entities/oauth-refresh-token.entity';
-import { RedemptionRequest } from '../entities/redemption-request.entity';
-import { CreditTransaction } from '../entities/credit-transaction.entity';
+import { Transaction } from '../entities/transaction.entity';
 
 @Injectable()
 export class MemberService {
@@ -16,10 +15,8 @@ export class MemberService {
     private accessTokenRepository: Repository<OAuthAccessToken>,
     @InjectRepository(OAuthRefreshToken)
     private refreshTokenRepository: Repository<OAuthRefreshToken>,
-    @InjectRepository(RedemptionRequest)
-    private redemptionRepository: Repository<RedemptionRequest>,
-    @InjectRepository(CreditTransaction)
-    private creditRepository: Repository<CreditTransaction>,
+    @InjectRepository(Transaction)
+    private transactionRepository: Repository<Transaction>,
   ) {}
 
   /**
@@ -52,52 +49,29 @@ export class MemberService {
   }
 
   /**
-   * Get member's transaction history (redemptions + credits)
+   * Get member's transaction history from unified Transaction table
    */
   async getTransactionHistory(memberId: string, limit = 50) {
-    // Get redemptions
-    const redemptions = await this.redemptionRepository.find({
-      where: {
-        member: { id: memberId },
-        status: 'approved'
-      },
+    // Query unified transactions table - much simpler!
+    const transactions = await this.transactionRepository.find({
+      where: { memberId },
       relations: ['client'],
       order: { createdAt: 'DESC' },
       take: limit,
     });
 
-    // Get credits
-    const credits = await this.creditRepository.find({
-      where: { member: { id: memberId } },
-      relations: ['client'],
-      order: { createdAt: 'DESC' },
-      take: limit,
-    });
-
-    // Combine and sort by date
-    const transactions = [
-      ...redemptions.map((r) => ({
-        id: r.id,
-        type: 'redemption' as const,
-        amount: -r.amount, // Negative for deduction
-        description: r.description,
-        partnerName: r.client.clientName,
-        status: r.status,
-        createdAt: r.createdAt,
-      })),
-      ...credits.map((c) => ({
-        id: c.id,
-        type: 'credit' as const,
-        amount: c.amount, // Positive for addition
-        description: c.description,
-        reason: c.reason,
-        partnerName: c.client.clientName,
-        createdAt: c.createdAt,
-      })),
-    ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-     .slice(0, limit);
-
-    return transactions;
+    // Format for frontend
+    return transactions.map((tx) => ({
+      id: tx.id,
+      type: tx.type, // 'credit' or 'debit'
+      amount: tx.type === 'credit' ? tx.amount : -tx.amount, // Positive for credits, negative for debits
+      description: tx.description,
+      method: tx.method,
+      partnerName: tx.client.clientName,
+      status: tx.status,
+      createdAt: tx.createdAt,
+      completedAt: tx.completedAt,
+    }));
   }
 
   /**
