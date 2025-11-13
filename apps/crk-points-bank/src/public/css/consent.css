@@ -96,6 +96,10 @@ body {
   border-radius: 6px;
   margin-bottom: 10px;
 }
+.permission-item.critical {
+  background: #fff8f0;
+  border: 2px solid #ff9800;
+}
 
 .permission-icon {
   width: 40px;
@@ -108,6 +112,9 @@ body {
   justify-content: center;
   margin-right: 15px;
   font-size: 18px;
+}
+.critical .permission-icon {
+  background: #ff9800;
 }
 
 .permission-text {
@@ -122,6 +129,39 @@ body {
 .permission-text span {
   color: #666;
   font-size: 12px;
+}
+
+.warning-box {
+  background: #fffbf0;
+  border: 2px solid #ff9800;
+  border-radius: 6px;
+  padding: 12px 15px;
+  margin: 12px 0 15px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.warning-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.warning-text {
+  flex: 1;
+}
+.warning-text strong {
+  display: block;
+  color: #e65100;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+.warning-text p {
+  color: #f57c00;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
 }
 
 .actions {
