@@ -1,0 +1,417 @@
+{
+  "info": {
+    "name": "Points Bank OAuth2.0 Server",
+    "description": "API collection for Points Bank OAuth2.0 Authorization Server - includes admin endpoints, member authentication, and full OAuth2.0 flow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "{{base_url}}",
+      "type": "string"
+    },
+    {
+      "key": "client_id",
+      "value": "{{client_id}}",
+      "type": "string"
+    },
+    {
+      "key": "client_secret",
+      "value": "{{client_secret}}",
+      "type": "string"
+    },
+    {
+      "key": "redirect_uri",
+      "value": "{{redirect_uri}}",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "authorization_code",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "member_jwt",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Admin",
+      "description": "Admin endpoints for managing OAuth clients (partner applications)",
+      "item": [
+        {
+          "name": "Register OAuth Client",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('client_id', response.clientId);",
+                  "    pm.environment.set('client_secret', response.clientSecret);",
+                  "    console.log('Client ID:', response.clientId);",
+                  "    console.log('Client Secret:', response.clientSecret);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clientName\": \"Partner App\",\n  \"redirectUris\": [\"http://localhost:4200/callback\"],\n  \"allowedGrants\": [\"authorization_code\", \"refresh_token\"],\n  \"allowedScopes\": [\"profile\", \"points\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/oauth-clients",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "oauth-clients"]
+            },
+            "description": "Register a new OAuth client (partner application). The response includes clientId and clientSecret - save the secret as it's only shown once."
+          },
+          "response": []
+        },
+        {
+          "name": "List OAuth Clients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/admin/oauth-clients",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "oauth-clients"]
+            },
+            "description": "List all registered OAuth clients"
+          },
+          "response": []
+        },
+        {
+          "name": "Get OAuth Client by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/admin/oauth-clients/{{client_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "oauth-clients", "{{client_id}}"]
+            },
+            "description": "Get details of a specific OAuth client"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Member Authentication",
+      "description": "Endpoints for member registration and direct authentication (JWT-based)",
+      "item": [
+        {
+          "name": "Register Member",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"member@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new member account"
+          },
+          "response": []
+        },
+        {
+          "name": "Login Member (JWT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('member_jwt', response.access_token);",
+                  "    console.log('JWT Token:', response.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"member@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login as a member and receive JWT token for direct API access"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Member Profile (JWT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{member_jwt}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile"]
+            },
+            "description": "Get member profile using JWT authentication"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "OAuth2.0 Flow",
+      "description": "Full OAuth2.0 Authorization Code Flow - typically handled by browser redirects",
+      "item": [
+        {
+          "name": "1. Authorization Request (Browser)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/oauth/authorize?client_id={{client_id}}&redirect_uri={{redirect_uri}}&response_type=code&scope=profile points&state=random_state_string",
+              "host": ["{{base_url}}"],
+              "path": ["api", "oauth", "authorize"],
+              "query": [
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}"
+                },
+                {
+                  "key": "redirect_uri",
+                  "value": "{{redirect_uri}}"
+                },
+                {
+                  "key": "response_type",
+                  "value": "code"
+                },
+                {
+                  "key": "scope",
+                  "value": "profile points"
+                },
+                {
+                  "key": "state",
+                  "value": "random_state_string",
+                  "description": "CSRF protection - client should verify this matches"
+                }
+              ]
+            },
+            "description": "Step 1: Partner app redirects member to this endpoint. If member not logged in, shows login page. After login, shows consent screen."
+          },
+          "response": []
+        },
+        {
+          "name": "2. Exchange Code for Tokens",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('access_token', response.access_token);",
+                  "    pm.environment.set('refresh_token', response.refresh_token);",
+                  "    console.log('Access Token:', response.access_token);",
+                  "    console.log('Refresh Token:', response.refresh_token);",
+                  "    console.log('Expires in:', response.expires_in, 'seconds');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "authorization_code",
+                  "type": "text"
+                },
+                {
+                  "key": "code",
+                  "value": "{{authorization_code}}",
+                  "type": "text",
+                  "description": "Authorization code from step 1 redirect"
+                },
+                {
+                  "key": "redirect_uri",
+                  "value": "{{redirect_uri}}",
+                  "type": "text",
+                  "description": "Must match the redirect_uri from authorization request"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client_secret}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/oauth/token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "oauth", "token"]
+            },
+            "description": "Step 2: After receiving authorization code from redirect, exchange it for access_token and refresh_token. Code is one-time use and expires in 5 minutes."
+          },
+          "response": []
+        },
+        {
+          "name": "3. Get Member Info (OAuth Token)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/oauth/userinfo",
+              "host": ["{{base_url}}"],
+              "path": ["api", "oauth", "userinfo"]
+            },
+            "description": "Step 3: Use access_token to fetch member information. Response includes only data allowed by approved scopes."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Access Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('access_token', response.access_token);",
+                  "    pm.environment.set('refresh_token', response.refresh_token);",
+                  "    console.log('New Access Token:', response.access_token);",
+                  "    console.log('New Refresh Token:', response.refresh_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "refresh_token",
+                  "type": "text"
+                },
+                {
+                  "key": "refresh_token",
+                  "value": "{{refresh_token}}",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{client_id}}",
+                  "type": "text"
+                },
+                {
+                  "key": "client_secret",
+                  "value": "{{client_secret}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/oauth/token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "oauth", "token"]
+            },
+            "description": "Refresh an expired access_token using the refresh_token. Returns new access_token and refresh_token pair."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api",
+          "host": ["{{base_url}}"],
+          "path": ["api"]
+        },
+        "description": "Simple health check endpoint"
+      },
+      "response": []
+    }
+  ]
+}
