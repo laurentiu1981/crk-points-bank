@@ -1,18 +1,24 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
 } from 'typeorm';
+import { randomBytes } from 'crypto';
 
 @Entity('oauth_clients')
 export class OAuthClient {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column({ name: 'client_id', unique: true })
+  @PrimaryColumn({ name: 'client_id' })
   clientId: string;
+
+  @BeforeInsert()
+  generateClientId() {
+    if (!this.clientId) {
+      this.clientId = randomBytes(16).toString('hex');
+    }
+  }
 
   @Column({ name: 'client_secret' })
   clientSecret: string;

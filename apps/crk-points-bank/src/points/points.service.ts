@@ -59,7 +59,7 @@ export class PointsService {
     const transaction = this.transactionRepository.create({
       memberId: member.id,
       member,
-      clientId: client.id,
+      clientId: client.clientId,
       client,
       type: 'debit',
       method: 'oauth_direct',
@@ -151,7 +151,7 @@ export class PointsService {
     const request = this.redemptionRepository.create({
       memberId: member.id,
       member,
-      clientId: client.id,
+      clientId: client.clientId,
       client,
       amount,
       description,
@@ -250,7 +250,7 @@ export class PointsService {
     const transaction = this.transactionRepository.create({
       memberId: request.member.id,
       member: request.member,
-      clientId: request.client.id,
+      clientId: request.client.clientId,
       client: request.client,
       type: 'debit',
       method: 'otp_approval',
@@ -392,7 +392,7 @@ export class PointsService {
     const transaction = this.transactionRepository.create({
       memberId: member.id,
       member,
-      clientId: client.id,
+      clientId: client.clientId,
       client,
       type: 'credit',
       method: reason || 'partner_credit',

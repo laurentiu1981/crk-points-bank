@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Points Bank OAuth2.0 Server",
-    "description": "API collection for Points Bank OAuth2.0 Authorization Server - includes admin endpoints, member authentication, and full OAuth2.0 flow",
+    "name": "Points Bank - CRK Mock",
+    "description": "API collection for Points Bank OAuth2.0 Authorization Server - includes admin endpoints, member authentication, and full OAuth2.0 flow.\n\nResponse Format:\n- Admin & Auth endpoints: { data: ... } for success, { error: { message, code, statusCode } } for errors\n- OAuth endpoints: RFC 6749 compliant (unchanged)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -49,7 +49,7 @@
   "item": [
     {
       "name": "Admin",
-      "description": "Admin endpoints for managing OAuth clients (partner applications)",
+      "description": "Admin endpoints for managing OAuth clients (partner applications). Success responses wrapped in { data: ... }, errors in { error: { message, code, statusCode } }",
       "item": [
         {
           "name": "Register OAuth Client",
@@ -60,10 +60,11 @@
                 "exec": [
                   "if (pm.response.code === 201) {",
                   "    const response = pm.response.json();",
-                  "    pm.environment.set('client_id', response.clientId);",
-                  "    pm.environment.set('client_secret', response.clientSecret);",
-                  "    console.log('Client ID:', response.clientId);",
-                  "    console.log('Client Secret:', response.clientSecret);",
+                  "    const client = response.data;",
+                  "    pm.environment.set('client_id', client.clientId);",
+                  "    pm.environment.set('client_secret', client.clientSecret);",
+                  "    console.log('Client ID:', client.clientId);",
+                  "    console.log('Client Secret:', client.clientSecret);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -87,7 +88,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "admin", "oauth-clients"]
             },
-            "description": "Register a new OAuth client (partner application). The response includes clientId and clientSecret - save the secret as it's only shown once."
+            "description": "Register a new OAuth client (partner application). Response format: { data: { clientId, clientSecret, ... } }. Save the secret as it's only shown once."
           },
           "response": []
         },
@@ -101,7 +102,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "admin", "oauth-clients"]
             },
-            "description": "List all registered OAuth clients"
+            "description": "List all registered OAuth clients. Response format: { data: [...] }"
           },
           "response": []
         },
@@ -115,7 +116,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "admin", "oauth-clients", "{{client_id}}"]
             },
-            "description": "Get details of a specific OAuth client"
+            "description": "Get details of a specific OAuth client. Response format: { data: { clientId, clientName, ... } }"
           },
           "response": []
         }
@@ -144,7 +145,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "register"]
             },
-            "description": "Register a new member account"
+            "description": "Register a new member account. Response format: { data: { id, email, firstName, lastName, ... } }"
           },
           "response": []
         },
@@ -157,8 +158,9 @@
                 "exec": [
                   "if (pm.response.code === 200) {",
                   "    const response = pm.response.json();",
-                  "    pm.environment.set('member_jwt', response.access_token);",
-                  "    console.log('JWT Token:', response.access_token);",
+                  "    const authData = response.data;",
+                  "    pm.environment.set('member_jwt', authData.access_token);",
+                  "    console.log('JWT Token:', authData.access_token);",
                   "}"
                 ],
                 "type": "text/javascript"
@@ -182,7 +184,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "login"]
             },
-            "description": "Login as a member and receive JWT token for direct API access"
+            "description": "Login as a member and receive JWT token for direct API access. Response format: { data: { access_token } }"
           },
           "response": []
         },
@@ -201,7 +203,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "profile"]
             },
-            "description": "Get member profile using JWT authentication"
+            "description": "Get member profile using JWT authentication. Response format: { data: { id, email, firstName, lastName, points, ... } }"
           },
           "response": []
         }

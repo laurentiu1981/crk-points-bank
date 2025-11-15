@@ -47,17 +47,27 @@ export class AdminService {
   }
 
   async getClientById(id: string): Promise<OAuthClient> {
-    return this.clientRepository.findOne({ where: { id } });
+    const client = await this.clientRepository.findOne({ where: { clientId: id } });
+    if (!client) {
+      throw new NotFoundException('OAuth client not found');
+    }
+    return client;
   }
 
   async deactivateClient(id: string): Promise<OAuthClient> {
-    const client = await this.clientRepository.findOne({ where: { id } });
+    const client = await this.clientRepository.findOne({ where: { clientId: id } });
+    if (!client) {
+      throw new NotFoundException('OAuth client not found');
+    }
     client.active = false;
     return this.clientRepository.save(client);
   }
 
   async activateClient(id: string): Promise<OAuthClient> {
-    const client = await this.clientRepository.findOne({ where: { id } });
+    const client = await this.clientRepository.findOne({ where: { clientId: id } });
+    if (!client) {
+      throw new NotFoundException('OAuth client not found');
+    }
     client.active = true;
     return this.clientRepository.save(client);
   }

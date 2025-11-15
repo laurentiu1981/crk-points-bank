@@ -9,6 +9,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app/app.module';
 import { join } from 'path';
 import session from "express-session";
+import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -22,6 +24,12 @@ async function bootstrap() {
       'member/logout',
     ],
   });
+
+  // Register global exception filter for consistent error responses
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Register global interceptor for wrapping successful responses
+  app.useGlobalInterceptors(new ResponseTransformInterceptor());
 
   // Configure Pug template engine
   app.setBaseViewsDir(join(__dirname, 'views'));
